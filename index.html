@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>截圖小幫手</title>
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>
+
+    <!-- jQuery UI -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.1/themes/smoothness/jquery-ui.css">
+    <script src="https://code.jquery.com/ui/1.13.1/jquery-ui.min.js"></script>
+
+    <!-- bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-pprn3073KE6tl6bjs2QrFaJGz5/SUsLqktiwsUTF55Jfv3qYSDhgCecCxMW52nD2"
+        crossorigin="anonymous"></script>
+
+    <style>
+        body {
+            font-size: 12px;
+        }
+
+        div {
+            margin: 1px;
+        }
+    </style>
+</head>
+
+
+<body>
+    <div class="container">
+
+        <div class="row">
+            <div class="col">
+                <button type="button" class="btn btn-primary" onclick="startCapture()">開始截圖</button>
+                <button type="button" class="btn btn-danger" onclick="stopCapture()">停止截圖</button>
+                <button type="button" class="btn btn-success" onclick="snapPhoto()">拍照</button>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="border border-success p-2 mb-2 rounded-4 text-center">
+                    <h4>Photo</h4>
+                    <canvas id="myCanvas">
+                        Your browser does not support HTML5 canvas.
+                    </canvas>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+                <div class="border border-success p-2 mb-2 rounded-4 text-center">
+                    <h4>Video</h4>
+                    <video id="myVideo" autoplay>
+                        Your browser does not support HTML5 video.
+                    </video>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <script>
+        var video = document.getElementById("myVideo");
+        var canvas = document.getElementById("myCanvas");
+
+        var startCapture = function () {
+            if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
+                navigator.mediaDevices.getDisplayMedia({
+                    video: {
+                        cursor: "always"
+                    },
+                    audio: false
+                }).then(function (stream) {
+                    video.srcObject = stream;
+                    video.play();
+                });
+
+            }
+        }
+        var stopCapture = function (evt) {
+            var tracks = video.srcObject.getTracks();
+            tracks.forEach(track => track.stop());
+
+            video.srcObject = null;
+
+            context = canvas.getContext('2d');
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            snapPhoto();
+        }
+
+        var snapPhoto = function () {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // for drawing the video element on the canvas
+        }
+    </script>
+</body>
+
+</html>
