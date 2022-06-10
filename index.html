@@ -33,20 +33,20 @@
 <body>
     <div class="container">
         <div class="row g-2">
-            <div class="col-3 p-2 border rounded-4 text-center">
+            <div class="col-9 p-2 border rounded-4 text-center">
                 <button type="button" class="btn btn-primary" onclick="startCapture()">Start</button>
                 <button type="button" class="btn btn-danger" onclick="stopCapture()">Stop</button>
                 <button type="button" class="btn btn-success" onclick="snapPhoto()">Shot</button>
             </div>
-            <div class="col-9 p-2 border rounded-4 text-center">
+            <div class="col-3 p-2 border rounded-4 text-center">
                 <div class="mb-3">
                     <div id="slider"></div>
                 </div>
                 <div class="input-group mb-3">
                     <span class="input-group-text" id="basic-addon3">Line Width</span>
-                    <input type="text" id="lineWidth" value="5" aria-describedby="basic-addon3" readonly>
+                    <input type="text" id="lineWidth" value="5" size="3" aria-describedby="basic-addon3" readonly>
                     <span class="input-group-text" id="basic-addon4">Color</span>
-                    <input type="color" id="fillStyle" value="#ff0000" aria-describedby="basic-addon4">
+                    <input type="color" class="form-control-color" id="fillStyle" value="#ff0000" title="Choose your color">
                 </div>
             </div>
 
@@ -72,6 +72,9 @@
         const canvas = document.getElementById("myCanvas");
         const ctx = canvas.getContext("2d");
 
+        default_canvas_width = canvas.width;
+        default_canvas_height = canvas.height;
+
         let startCapture = function() {
             if (navigator.mediaDevices && navigator.mediaDevices.getDisplayMedia) {
                 navigator.mediaDevices.getDisplayMedia({
@@ -88,19 +91,24 @@
         }
 
         let stopCapture = function() {
-            const tracks = video.srcObject.getTracks();
-            tracks.forEach(track => track.stop());
+            if (video.srcObject != null) {
+                const tracks = video.srcObject.getTracks();
+                tracks.forEach(track => track.stop());
 
-            video.srcObject = null;
+                video.srcObject = null;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                canvas.width = default_canvas_width;
+                canvas.height = default_canvas_height;
+            }
         }
 
         let snapPhoto = function() {
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // for drawing the video element on the canvas
+            if (video.srcObject != null) {
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                ctx.drawImage(video, 0, 0, video.videoWidth, video.videoHeight); // for drawing the video element on the canvas
+            }
         }
 
 
